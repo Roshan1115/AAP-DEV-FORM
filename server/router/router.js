@@ -2,12 +2,6 @@ import  express  from 'express';
 import { userCollection } from '../db/database.js'
 
 
-//...............mongodb......................................
-
-//................end of mongodb.................................
-
-
-
 const router = express.Router();
     
 router.get('/', function (req, res) {
@@ -15,41 +9,63 @@ router.get('/', function (req, res) {
     res.end();
 })
 
-router.get('/submit', async (req,res) => {
+router.post('/submit', async (req,res) => {
+
+  // console.log(req);
+  // console.log(req.body);
+
+  if(!req.body){
+    return res.status(422).json({message: "Please fill all the fields with appropriate value."})
+  }
+  const {
+    name, course, semester, school,
+        objective, benefit_to_society, methodology,
+        outcome
+  } = req.body;
+
+  if( !name || !course || !semester || !school || !objective || !benefit_to_society || !methodology || !outcome ){
+    return res.status(422).json({message: "Please fill all the fields with appropriate value."})
+  }
+
+
 
   try{
     await userCollection.createCollection();
-    console.log('created');
+    console.log('Collection created. This part has been defined in router.js');
   }
   catch(err) {
     console.log(err);
-    res.status(404).send('Opps! There is a problem in database.')
+    return res.status(404).json({message: 'Opps! There is a problem in database.'})
   } 
 
+  // console.log(req.body);
 
-  const newData = new userCollection({
-    name: 'test',
-    course: 'test_course',
-    semester: 4,
-    school: 'testschool',
-    
-    objective: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Perspiciatis itaque provident et quibusdam nesciunt deserunt iusto optio ipsa sit eligendi? Pariatur cupiditate ducimus nesciunt id. Obcaecati eos quaerat, harum fuga fugiat iste! Animi deleniti placeat dolor doloremque, repudiandae, perferendis, assumenda itaque reprehenderit voluptas quasi illum quibusdam obcaecati rem molestiae ipsa vel excepturi magni? Omnis aperiam vitae, ad, similique sit qui distinctio aliquam perspiciatis quisquam itaque quae magnam odit saepe dolor incidunt amet voluptate delectus eum minima enim nulla voluptatem ipsum! In reprehenderit, qui facere ad laudantium quo fuga, perferendis asperiores ducimus neque dolores quam voluptatum dolorem repudiandae. Quos, nisi neque.',
+  const incomingData = new userCollection(req.body)
 
-    benefit_to_society: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Perspiciatis itaque provident et quibusdam nesciunt deserunt iusto optio ipsa sit eligendi? Pariatur cupiditate ducimus nesciunt id. Obcaecati eos quaerat, harum fuga fugiat iste! Animi deleniti placeat dolor doloremque, repudiandae, perferendis, assumenda itaque reprehenderit voluptas quasi illum quibusdam obcaecati rem molestiae ipsa vel excepturi magni? Omnis aperiam vitae, ad, similique sit qui distinctio aliquam perspiciatis quisquam itaque quae magnam odit saepe dolor incidunt amet voluptate delectus eum minima enim nulla voluptatem ipsum! In reprehenderit, qui facere ad laudantium quo fuga, perferendis asperiores ducimus neque dolores quam voluptatum dolorem repudiandae. Quos, nisi neque.',
 
-    methodology: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Perspiciatis itaque provident et quibusdam nesciunt deserunt iusto optio ipsa sit eligendi? Pariatur cupiditate ducimus nesciunt id. Obcaecati eos quaerat, harum fuga fugiat iste! Animi deleniti placeat dolor doloremque, repudiandae, perferendis, assumenda itaque reprehenderit voluptas quasi illum quibusdam obcaecati rem molestiae ipsa vel excepturi magni? Omnis aperiam vitae, ad, similique sit qui distinctio aliquam perspiciatis quisquam itaque quae magnam odit saepe dolor incidunt amet voluptate delectus eum minima enim nulla voluptatem ipsum! In reprehenderit, qui facere ad laudantium quo fuga, perferendis asperiores ducimus neque dolores quam voluptatum dolorem repudiandae. Quos, nisi neque.',
+//........................demo document........................................
+//   const newData = new userCollection({
+//     name: 'test',
+//     course: 'test_course',
+//     semester: 4,
+//     school: 'testschool',
+//     objective: 'Lorem ipsum .',
+//     benefit_to_society: 'Lorem ipsum ',
+//     methodology: 'Lorem ipsum dolor .',
+//     outcome: 'Lorem ipsum do.',
+// });
 
-    outcome: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Perspiciatis itaque provident et quibusdam nesciunt deserunt iusto optio ipsa sit eligendi? Pariatur cupiditate ducimus nesciunt id. Obcaecati eos quaerat, harum fuga fugiat iste! Animi deleniti placeat dolor doloremque, repudiandae, perferendis, assumenda itaque reprehenderit voluptas quasi illum quibusdam obcaecati rem molestiae ipsa vel excepturi magni? Omnis aperiam vitae, ad, similique sit qui distinctio aliquam perspiciatis quisquam itaque quae magnam odit saepe dolor incidunt amet voluptate delectus eum minima enim nulla voluptatem ipsum! In reprehenderit, qui facere ad laudantium quo fuga, perferendis asperiores ducimus neque dolores quam voluptatum dolorem repudiandae. Quos, nisi neque.',
-});
 
-newData.save((err, comment) => {
+
+incomingData.save((err, comment) => {
   if (err){
     console.log(err);
-    res.status(405).send("Please fill all the fields with appropriate value.")
+    res.status(422).json({message: "Please fill all the fields with appropriate value."})
   } 
   else {
-    console.log('data saved:', comment)
-    res.status(200).send("Your documents have been saved successfully.")
+    // console.log('data saved:', comment)
+    console.log("data saved");
+    res.status(200).json({message: "Your documents have been saved successfully."})
     }
 });
 

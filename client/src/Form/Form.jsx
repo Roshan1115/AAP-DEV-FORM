@@ -32,15 +32,45 @@ export default function Form() {
   }
 
 
-  const handleSubmit = async () => {
-    
-    const {
-      name, course, semester, school,
-      objective, benefit_to_society, methodology,
-      outcome
-    } = user;
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-    console.log(user);
+    // console.log(user);
+
+    const fetchingMethod = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(user),
+    }
+
+    // console.log(fetchingMethod.body);
+
+
+    const res = await fetch('/submit', fetchingMethod )
+
+    const data = await res.json();
+    
+    // console.log(data);
+    // console.log('res', res);
+
+    if(res.status === 422 ){
+      console.log("Invalid not Successfull.");
+      alert(data.message)
+    }
+    else if(res.status === 200){
+      alert(data.message)
+      setUser({
+        name: "", course: "", semester: "", school: "",
+        objective: "", benefit_to_society: "", methodology: "",
+        outcome: ""
+      })
+    }
+    else{
+      console.log("Else Problem");
+      alert(data.message)
+    }
   }
 
 
@@ -59,6 +89,7 @@ export default function Form() {
           required
           id="outlined-required"
           name="name"
+          value={user.name}
           onChange={handleInput}
           label="Name"
         />
@@ -68,6 +99,7 @@ export default function Form() {
           required
           id="outlined-required"
           name="course"
+          value={user.course}
           onChange={handleInput}
           label="Course"
           style={{margin:'0px', width:"49%"}}
@@ -78,6 +110,7 @@ export default function Form() {
           label="Semester"
           type="number"
           name="semester"
+          value={user.semester}
           style={{margin:'0px',width:"49%"}}
           onChange={handleInput}
           InputLabelProps={{
@@ -90,6 +123,7 @@ export default function Form() {
           required
           id="outlined-required"
           name="school"
+          value={user.school}
           onChange={handleInput}
           label="School"
         />
@@ -109,6 +143,7 @@ export default function Form() {
           maxRows={4}
           variant="standard"
           name="objective"
+          value={user.objective}
           onChange={handleInput}
           width='100%'
           style={{marginBottom:'4vh',marginTop:'0'}}
@@ -124,6 +159,7 @@ export default function Form() {
           maxRows={4}
           variant="standard"
           name="benefit_to_society"
+          value={user.benefit_to_society}
           onChange={handleInput}
           width='100%'
           style={{marginBottom:'4vh',marginTop:'0'}}
@@ -139,6 +175,7 @@ export default function Form() {
           maxRows={4}
           variant="standard"
           name="methodology"
+          value={user.methodology}
           onChange={handleInput}
           width='100%'
           style={{marginBottom:'4vh',marginTop:'0'}}
@@ -154,6 +191,7 @@ export default function Form() {
           maxRows={4}
           variant="standard"
           name="outcome"
+          value={user.outcome}
           onChange={handleInput}
           width='100%'
           style={{marginBottom:'4vh',marginTop:'0'}}
